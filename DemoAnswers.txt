@@ -1,0 +1,20 @@
+1. Why Do Anything Questions
+"Honestly, we've been struggling with manual time tracking for months – it's error‑prone and kills productivity. What we really need is an automated system that captures clock‑ins and clock‑outs without any manual entry. If we don't fix this, we'll keep losing hours to admin work and payroll disputes will only get worse."
+
+2. Business Value Questions
+"Success for us means cutting payroll processing time by at least 75% – that saves about 20 hours a month for my finance team. We haven't run a formal ROI yet, but I know even a 2% reduction in overtime fraud would pay for the software. Honestly, your GPS‑based clock‑in feature stood out – that's what got us to take this call."
+
+3. Key Contacts Questions
+"My VP of Operations will need to sign off, but the real champion is our HR manager, Lisa – she's the one pushing for this. The economic buyer is our CFO, though, she holds the budget. Ultimately, it'll be the three of us – me, Lisa, and the CFO – making the final decision together."
+
+4. Decision Criteria & Decision Process Questions
+“The most important requirements for us are real‑time API integration with our HRIS and SOC2 compliance. If we mapped out the decision path: first, Mike and I will shortlist two vendors; then Lisa will want a security review; finally, the IT director signs off on technical fit. The whole process takes about six weeks.”
+
+5. Current Environment (Existing situation, pain, metrics)
+"Right now we use paper timesheets and a shared Excel file. It takes payroll two full days to reconcile every month, and we've caught at least five instances of time theft in the past quarter. Average payroll error is about 4%, and employee frustration with late paychecks is growing. That's the mess we need to clean up."
+
+6. Next Steps Questions
+"Next, I'd like you to send over a proposal and a demo link for our leadership team. We're hoping to make a decision by the end of next month, and if approved, we'd want to implement within two weeks after that. So the next step for you is to schedule a follow‑up with mike on next Friday – I'll copy her on the email."
+
+7. ToDos
+"Right, I'll review that proposal and get back to you by the end of next week. Also, could you send over some customer references from the healthcare sector? And please add my VP of Operations, Sarah Jenkins, to the next meeting. I'll send you her contact information right after this call." 
