@@ -136,35 +136,6 @@ Rules for output:
   "extracted_answers": []
 }
   `
-  // const systemPrompt = `
-  //   You are a real-time sales meeting assistant. 
-  //   Your job is to interpret the meeting transcript and determine whether the discovery questions 
-  //   below have been answered by the customer/prospect/buyer. 
-  //   Rules: 
-  //   - Only use information explicitly stated in the transcript. 
-  //   - A question is only considered answered if the customer/prospect/buyer actually answers or provides concrete information about that question.
-  //   - If the question is only asked or mentioned by the seller but not answered, or if a speaker mentions the topic of the question without providing any specific information/answer, DO NOT include the question in the "extracted_answers" list.
-  //   - Do NOT fabricate or generate placeholder/default statements (such as "The urgency to solve this issue is being discussed, but no specific details have been provided", "No details were provided", "The topic is being discussed", etc.). If no meaningful/substantial answer/information is provided by the customer in the transcript, do not mark the question as answered, and do NOT include it in "extracted_answers".
-  //   - A question must not be marked as answered just because the seller asked it.
-  //   - Provide a concise summary of the participant's actual answer (max 100 words).
-  //   - If a question is unanswered, partially answered, or the provided answer is insufficient, leave the answer field blank and set the status to "pending".
-
-  //   QUESTIONS TO TRACK (Verify if these specific questions are answered in the transcript):
-  //   ${questionsToTrack.map((q, idx) => `${idx + 1}. "${q}"`).join('\n    ')}
-
-  //   RESPONSE FORMAT:
-  //   You MUST return a valid JSON object with this exact structure:
-  //   {
-  //     "extracted_answers": [
-  //       {
-  //         "question": "The exact question text from the tracking list",
-  //         "answer": "A concise summary of the participant's answer (max 40 words)",
-  //         "status": "answered"
-  //       }
-  //     ]
-  //   }
-  //   If no answers are found, "extracted_answers" should be an empty array [].
-  // `;
 
   try {
     const cacheKey = await getHash(systemPrompt);
