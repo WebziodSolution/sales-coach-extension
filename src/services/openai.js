@@ -265,10 +265,11 @@ export async function getMeetingSummary(fullTranscript, capturedAnswers) {
     "KeyContacts": [
     {
     "name": "Full or partial name exactly as supported by the transcript",
-    "title": "Title/Role (Champion, Economic Buyer, etc.)"
+    "title": "Title/Role (Champion, Economic Buyer, etc.)",
+    "role": "string"
     }
     ],  
-    "NextSteps": "Summarize agreed next steps, owners, timing, decision timeline, and implementation plan. Convert buyer-mentioned dates or days to MM/DD/YYYY when confidently resolvable. Set to null if not mentioned.",
+    "NextSteps": "Summarize agreed next steps, owners, timing, decision timeline, and implementation plan. Convert buyer-mentioned dates or days to MM/DD/YYYY when confidently resolvable. Return list of key points (each point on a new line starting with a dash '-'). but in string format. like "- point1\n- point2\n- point3"",
     "DecisionMap": "Summarize the decision process, timeline, procurement steps, security review, legal review, approval path, buying process, and evaluation criteria. This maps to Decision Criteria, Decision Process, and Paper Process. Convert buyer-mentioned dates or days to MM/DD/YYYY when confidently resolvable. Set to null if not mentioned.",
     "CurrentEnvironment": "Summarize the customer's current environment, current process, tech stack, existing tools, alternative solutions, competitors, or status quo. This maps to Competition. Set to null if not mentioned."
   }
@@ -433,7 +434,7 @@ Rules:
 - Set to null if not mentioned
 
 Output format:
-String
+Return list of key points (each point on a new line starting with a dash '-'). but in string format. like "- point1\n- point2\n- point3"
 
 6. CurrentEnvironment (MEDDIC: Competition / Current State)
 
@@ -491,7 +492,8 @@ OUTPUT SCHEMA
 "KeyContacts": [
 {
 "name": "exact transcript-supported name",
-"title": "Economic Buyer | Champion | Decision Maker | Influencer | Evaluator | Procurement | Security | Legal | Executive Sponsor"
+"title": "Economic Buyer | Champion | Decision Maker | Influencer | Evaluator | Procurement | Security | Legal | Executive Sponsor",
+"role": "string"
 }
 ],
 "NextSteps": "string or null",
@@ -563,6 +565,7 @@ Clearly identify assumptions and gaps.
 Write for executives and sales leadership.
 Focus on deal strategy, business value, and next actions.
 Return JSON only.
+For nextSteps return list of key points (each point on a new line starting with a dash '-'). but in string format. like "- point1\n- point2\n- point3"
 Generate:
 Executive Summary
 5-7 sentence overview of the opportunity.

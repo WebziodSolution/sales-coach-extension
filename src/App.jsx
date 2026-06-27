@@ -37,6 +37,21 @@ const CATEGORIES = {
   NextSteps: NextSteps_Questions                  // (Does not map)
 };
 
+const ALL_MASTER_QUESTIONS = [
+  "Can you walk me through your current approach today?",
+  "What challenges is that creating for the business, and if you could wave a magic wand and fix it, what would success look like?",
+  "Who is driving the evaluation and what role will you play in the process?",
+  "Who else will be involved in evaluating or approving a decision?",
+  "Who ultimately owns the budget and final approval?",
+  "When it comes time to make a decision, what will your team need to see to feel confident moving forward?",
+  "Aside from us, what other options are being considered, whether that's doing nothing, building internally, or evaluating other vendors?",
+  "Can you walk me through how a decision for a solution like this typically gets made—from this conversation through project kickoff?",
+  "Assuming everything went well, when would you ideally like to have something like this in place?",
+  "If your team decided to move forward with a solution like this, what procurement, legal, security, or contracting steps would typically be involved?",
+  "Based on our conversation today, what do you feel would be the most valuable next step?",
+  "Before we jump in, do you mind sharing what prompted you to take today's meeting and what would make this conversation valuable for you?"
+];
+
 const MEDDPICC_STAGES = [
   {
     key: 'BusinessValue',
@@ -422,7 +437,7 @@ const App = () => {
   const [isMeetingActive, setIsMeetingActive] = useState(true);
 
   // MEDDPICC States
-  const [activeCategoryKey, setActiveCategoryKey] = useState('Why_Do_Anything');
+  const [activeCategoryKey, setActiveCategoryKey] = useState('ALL');
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const [isMeddpiccCollapsed, setIsMeddpiccCollapsed] = useState(false);
   const [showAllAnswers, setShowAllAnswers] = useState(false);
@@ -1215,6 +1230,21 @@ const App = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                             </div>
+
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isMeddpiccCollapsed) setIsMeddpiccCollapsed(false);
+                                setActiveCategoryKey('ALL');
+                                setExpandedQuestion(null);
+                              }}
+                              className={`ml-2 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg border transition-all duration-200 cursor-pointer ${activeCategoryKey === 'ALL'
+                                ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                            >
+                              ALL question
+                            </button>
                           </div>
 
                           <button className="text-premium-400 hover:text-premium-600 transition-transform duration-200 cursor-pointer">
@@ -1279,153 +1309,181 @@ const App = () => {
                             {/* Selected Tab Label Name */}
                             <div className="text-center -mt-1.5">
                               <span className="text-[11px] font-black text-indigo-600 uppercase tracking-widest">
-                                {MEDDPICC_STAGES.find(s => s.key === activeCategoryKey)?.label}
+                                {activeCategoryKey === 'ALL' ? 'ALL QUESTIONS' : MEDDPICC_STAGES.find(s => s.key === activeCategoryKey)?.label}
                               </span>
                             </div>
 
-                            {/* Active Stage Details Card */}
-                            {(() => {
-                              const activeStage = MEDDPICC_STAGES.find(s => s.key === activeCategoryKey);
-                              if (!activeStage) return null;
+                            {/* Section Content: ALL Questions View vs Individual Stage Card */}
+                            {activeCategoryKey === 'ALL' ? (
+                              <div className="space-y-3 animate-slide-in">
+                                <div className="space-y-3">
+                                  <h4 className="text-[9px] font-black text-premium-400 uppercase tracking-widest">
+                                    TOP QUESTIONS
+                                  </h4>
+                                  <div className="space-y-2.5">
+                                    {(() => {
+                                      const unansweredMaster = ALL_MASTER_QUESTIONS.map((q, idx) => ({
+                                        question: q,
+                                        originalIndex: idx + 1
+                                      })).filter(item => {
+                                        const answer = getAnswerForQuestion(capturedAnswers, item.question);
+                                        return !(answer && answer.trim());
+                                      });
 
-                              const { answeredCount, totalCount, isCompleted } = getCategoryStatus(activeStage);
-                              const indexPrefix = MEDDPICC_STAGES.indexOf(activeStage) + 1;
+                                      const currentQuestionsToShow = unansweredMaster.slice(0, 3);
 
-                              return (
-                                <div className="space-y-3 animate-slide-in">
-                                  {/* Header Info */}
-                                  <div className="flex items-start space-x-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-                                      {renderStageIcon(activeStage.key)}
-                                    </div>
-                                    <div className="flex-1 space-y-1">
-                                      <div className="flex items-center justify-between">
-                                        <h3 className="text-sm font-black text-premium-900">
-                                          {indexPrefix}. {activeStage.title}
-                                        </h3>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${isCompleted
-                                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                                          : answeredCount > 0
-                                            ? 'bg-amber-50 text-amber-600 border border-amber-100'
-                                            : 'bg-indigo-50 text-indigo-600 border border-indigo-100'
-                                          }`}>
-                                          {isCompleted
-                                            ? 'Completed'
-                                            : answeredCount > 0
-                                              ? `In Progress (${answeredCount}/${totalCount})`
-                                              : 'Active'}
-                                        </span>
-                                      </div>
-                                      <p className="text-xs font-medium text-premium-400 leading-normal">
-                                        {activeStage.description}
-                                      </p>
-                                    </div>
+                                      if (currentQuestionsToShow.length === 0) {
+                                        return (
+                                          <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-center">
+                                            <p className="text-xs font-bold text-emerald-700">All MEDDPICC questions have been answered!</p>
+                                          </div>
+                                        );
+                                      }
+
+                                      return currentQuestionsToShow.map((item) => {
+                                        const question = item.question;
+                                        const qIdx = item.originalIndex;
+                                        const answer = getAnswerForQuestion(capturedAnswers, question);
+                                        const isAnswered = !!(answer && answer.trim());
+
+                                        return (
+                                          <div
+                                            key={question}
+                                            className={`rounded-xl border transition-all duration-200 overflow-hidden ${isAnswered
+                                              ? 'border-emerald-300 bg-emerald-50/5 hover:border-emerald-400'
+                                              : 'border-slate-100 bg-white hover:border-slate-200'
+                                              }`}
+                                          >
+                                            <div className="p-3.5 flex items-center justify-between select-none cursor-pointer hover:bg-slate-50/40 transition-colors">
+                                              <div className="flex items-center space-x-3 pr-4">
+                                                <div className={`flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full border text-[10px] font-bold ${isAnswered
+                                                  ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                                                  : 'bg-indigo-50/50 text-indigo-600 border-indigo-200'
+                                                  }`}>
+                                                  {qIdx}
+                                                </div>
+                                                <p className={`text-sm font-semibold leading-relaxed ${isAnswered ? 'text-slate-800' : 'text-slate-500 font-medium'
+                                                  }`}>
+                                                  {question}
+                                                </p>
+                                              </div>
+
+                                              <div className="shrink-0 flex items-center space-x-2.5">
+                                                {!isAnswered && (
+                                                  <Tooltip title="Mark as Answered" placement='bottom'>
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const nextAnswers = { ...capturedAnswers, [question]: "Checked" };
+                                                        setCapturedAnswers(nextAnswers);
+                                                        generateFinalSummary("N", nextAnswers);
+                                                      }}
+                                                      className="px-2 py-1 text-[9px] font-bold text-gray-600 hover:text-white bg-gray-50 hover:bg-gray-600 border border-gray-100 hover:border-gray-600 rounded-md cursor-pointer transition-all duration-200 flex items-center space-x-1"
+                                                    >
+                                                      Mark Answered
+                                                    </button>
+                                                  </Tooltip>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      });
+                                    })()}
                                   </div>
+                                </div>
+                              </div>
+                            ) : (
+                              (() => {
+                                const activeStage = MEDDPICC_STAGES.find(s => s.key === activeCategoryKey);
+                                if (!activeStage) return null;
 
-                                  {/* Questions List */}
-                                  {
-                                    activeStage?.questions?.length > 0 && (
-                                      <div className="space-y-3">
-                                        <h4 className="text-[9px] font-black text-premium-400 uppercase tracking-widest">
-                                          TOP QUESTIONS
-                                        </h4>
+                                const { answeredCount, totalCount, isCompleted } = getCategoryStatus(activeStage);
+                                const indexPrefix = MEDDPICC_STAGES.indexOf(activeStage) + 1;
 
-                                        <div className="space-y-2.5">
-                                          {[...(activeStage?.questions || [])]
-                                            .sort((qA, qB) => {
-                                              const ansA = getAnswerForQuestion(capturedAnswers, qA);
-                                              const isAnsweredA = !!(ansA && ansA.trim());
-                                              const ansB = getAnswerForQuestion(capturedAnswers, qB);
-                                              const isAnsweredB = !!(ansB && ansB.trim());
-                                              if (isAnsweredA && !isAnsweredB) return 1;
-                                              if (!isAnsweredA && isAnsweredB) return -1;
-                                              return 0;
-                                            })?.filter((question) => {
-                                              const answer = getAnswerForQuestion(capturedAnswers, question);
-                                              return !(answer && answer.trim())
-                                            })
-                                            .map((question, qIdx) => {
-                                              const answer = getAnswerForQuestion(capturedAnswers, question);
-                                              const isAnswered = !!(answer && answer.trim());
-                                              const isExpanded = expandedQuestion === question;
+                                return (
+                                  <div className="space-y-3 animate-slide-in">
+                                    {/* Questions List */}
+                                    {
+                                      activeStage?.questions?.length > 0 && (
+                                        <div className="space-y-3">
+                                          <h4 className="text-[9px] font-black text-premium-400 uppercase tracking-widest">
+                                            TOP QUESTIONS
+                                          </h4>
 
-                                              return (
-                                                <div
-                                                  key={qIdx}
-                                                  className={`rounded-xl border transition-all duration-200 overflow-hidden ${isAnswered
-                                                    ? 'border-emerald-300 bg-emerald-50/5 hover:border-emerald-400'
-                                                    : 'border-slate-100 bg-white hover:border-slate-200'
-                                                    }`}
-                                                >
-                                                  {/* Question Row */}
+                                          <div className="space-y-2.5">
+                                            {[...(activeStage?.questions || [])]
+                                              .sort((qA, qB) => {
+                                                const ansA = getAnswerForQuestion(capturedAnswers, qA);
+                                                const isAnsweredA = !!(ansA && ansA.trim());
+                                                const ansB = getAnswerForQuestion(capturedAnswers, qB);
+                                                const isAnsweredB = !!(ansB && ansB.trim());
+                                                if (isAnsweredA && !isAnsweredB) return 1;
+                                                if (!isAnsweredA && isAnsweredB) return -1;
+                                                return 0;
+                                              })?.filter((question) => {
+                                                const answer = getAnswerForQuestion(capturedAnswers, question);
+                                                return !(answer && answer.trim())
+                                              })
+                                              .map((question, qIdx) => {
+                                                const answer = getAnswerForQuestion(capturedAnswers, question);
+                                                const isAnswered = !!(answer && answer.trim());
+
+                                                return (
                                                   <div
-                                                    className="p-3.5 flex items-center justify-between select-none cursor-pointer hover:bg-slate-50/40 transition-colors"
-                                                  // onClick={() => setExpandedQuestion(isExpanded ? null : question)}
+                                                    key={qIdx}
+                                                    className={`rounded-xl border transition-all duration-200 overflow-hidden ${isAnswered
+                                                      ? 'border-emerald-300 bg-emerald-50/5 hover:border-emerald-400'
+                                                      : 'border-slate-100 bg-white hover:border-slate-200'
+                                                      }`}
                                                   >
-                                                    <div className="flex items-center space-x-3 pr-4">
-                                                      <div className={`flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full border text-[10px] font-bold ${isAnswered
-                                                        ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
-                                                        : 'bg-indigo-50/50 text-indigo-600 border-indigo-200'
-                                                        }`}>
-                                                        {qIdx + 1}
+                                                    {/* Question Row */}
+                                                    <div
+                                                      className="p-3.5 flex items-center justify-between select-none cursor-pointer hover:bg-slate-50/40 transition-colors"
+                                                    >
+                                                      <div className="flex items-center space-x-3 pr-4">
+                                                        <div className={`flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full border text-[10px] font-bold ${isAnswered
+                                                          ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                                                          : 'bg-indigo-50/50 text-indigo-600 border-indigo-200'
+                                                          }`}>
+                                                          {qIdx + 1}
+                                                        </div>
+                                                        <p className={`text-sm font-semibold leading-relaxed ${isAnswered ? 'text-slate-800' : 'text-slate-500 font-medium'
+                                                          }`}>
+                                                          {question}
+                                                        </p>
                                                       </div>
-                                                      <p className={`text-sm font-semibold leading-relaxed ${isAnswered ? 'text-slate-800' : 'text-slate-500 font-medium'
-                                                        }`}>
-                                                        {question}
-                                                      </p>
-                                                    </div>
 
-                                                    <div className="shrink-0 flex items-center space-x-2.5">
-                                                      {/* Button to mark as answered */}
-                                                      {!isAnswered && (
-                                                        <Tooltip title="Mark as Answered" placement='bottom'>
-                                                          <button
-                                                            onClick={(e) => {
-                                                              e.stopPropagation();
-                                                              const nextAnswers = { ...capturedAnswers, [question]: "Checked" };
-                                                              setCapturedAnswers(nextAnswers);
-                                                              generateFinalSummary("N", nextAnswers);
-                                                            }}
-                                                            className="px-2 py-1 text-[9px] font-bold text-gray-600 hover:text-white bg-gray-50 hover:bg-gray-600 border border-gray-100 hover:border-gray-600 rounded-md cursor-pointer transition-all duration-200 flex items-center space-x-1"
-                                                          >
-                                                            Mark Answered
-                                                          </button>
-                                                        </Tooltip>
-                                                      )}
-                                                      {/* Arrow Indicator */}
-                                                      {/* <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                      >
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                      </svg> */}
+                                                      <div className="shrink-0 flex items-center space-x-2.5">
+                                                        {/* Button to mark as answered */}
+                                                        {!isAnswered && (
+                                                          <Tooltip title="Mark as Answered" placement='bottom'>
+                                                            <button
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const nextAnswers = { ...capturedAnswers, [question]: "Checked" };
+                                                                setCapturedAnswers(nextAnswers);
+                                                                generateFinalSummary("N", nextAnswers);
+                                                              }}
+                                                              className="px-2 py-1 text-[9px] font-bold text-gray-600 hover:text-white bg-gray-50 hover:bg-gray-600 border border-gray-100 hover:border-gray-600 rounded-md cursor-pointer transition-all duration-200 flex items-center space-x-1"
+                                                            >
+                                                              Mark Answered
+                                                            </button>
+                                                          </Tooltip>
+                                                        )}
+                                                      </div>
                                                     </div>
                                                   </div>
-
-                                                  {/* Accordion Details (Answer Panel)
-                                                  {isExpanded && (
-                                                    <div className="px-3.5 pb-3.5 pt-0 border-t border-slate-50 bg-slate-50/20 text-xs text-slate-600 animate-slide-in">
-                                                      <div className="font-bold text-[9px] text-premium-400 uppercase tracking-widest mt-2 mb-1">
-                                                        ANSWER
-                                                      </div>
-                                                      <p className="leading-relaxed font-semibold text-slate-700">
-                                                        {isAnswered ? answer : "No answer captured yet. This will update automatically as the meeting progresses."}
-                                                      </p>
-                                                    </div>
-                                                  )} */}
-                                                </div>
-                                              );
-                                            })}
+                                                );
+                                              })}
+                                          </div>
                                         </div>
-                                      </div>
-                                    )
-                                  }
-                                </div>
-                              );
-                            })()}
+                                      )
+                                    }
+                                  </div>
+                                );
+                              })()
+                            )}
                           </div>
                         )}
                       </section>
